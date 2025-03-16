@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Gravity dependency injection configuration
+ *
+ * @category  Gravity
+ * @package   Gravity
+ * @author    Gravity Team <support@gravity.com>
+ * @copyright Copyright (c) 2023 Gravity (https://www.gravity.com)
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <!-- Logger Configuration -->
+    <type name="Gravity\Logger\Handler\System">
+        <arguments>
+            <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+        </arguments>
+    </type>    
+    <type name="Gravity\Logger\Logger">
+        <arguments>
+            <argument name="name" xsi:type="string">gravity</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="system" xsi:type="object">Gravity\Logger\Handler\System</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- Plugin Configuration for AppendReservationsInterface -->
+    <type name="Magento\InventoryReservationsApi\Model\AppendReservationsInterface">
+        <plugin name="gravity_stock_update" type="Gravity\Plugin\StockPlugin"/>
+    </type>
+
+    <!-- Payment Method Configuration -->
+    <virtualType name="GravityPaymentConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">Gravity\Model\Payment\PGravity::CODE</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Shipping Method Configuration -->
+    <virtualType name="GravityShippingConfig" type="Magento\Shipping\Model\Config">
+        <arguments>
+            <argument name="carrierCode" xsi:type="const">Gravity\Model\Carrier\LGravity::CODE</argument>
+        </arguments>
+    </virtualType>
+</config>
+

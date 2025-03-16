@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Gravity module configuration
+ *
+ * @category  Gravity
+ * @package   Gravity
+ * @author    Gravity Team <support@gravity.com>
+ * @copyright Copyright (c) 2023 Gravity (https://www.gravity.com)
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
+    <module name="Gravity_Core" setup_version="1.0.0">
+        <sequence>
+            <module name="Magento_Catalog" />
+            <module name="Magento_Sales" />
+            <module name="Magento_InventoryApi" />
+            <module name="Magento_InventoryConfigurationApi" />
+            <module name="Magento_InventoryReservationsApi" />
+        </sequence>
+    </module>
+</config>
+

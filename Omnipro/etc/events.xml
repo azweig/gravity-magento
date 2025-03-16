@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
-    <event name="sales_order_save_before">
-        <observer name="q_g_save_order_before" instance="Quickcomm\OriginalModule\Observer\BeforeSave" disabled="true"/>
-        <observer name="q_g_save_order_before_custom" instance="Omnipro\Gravity\Observer\CustomBeforeSave"/>
-    </event>
-</config>
