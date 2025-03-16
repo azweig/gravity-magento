@@ -1,282 +1,188 @@
-# Gravity Magento 2 Module
+# Gravity_Core Magento 2 Module
 
 ## Descripción
 
-El módulo Gravity para Magento 2 proporciona integración entre tu tienda Magento y los servicios de Gravity. Este módulo incluye funcionalidad de webhooks para productos y pedidos, un método de pago personalizado (PGravity) y un método de envío personalizado (LGravity) específicamente diseñados para integraciones API/admin.
+El módulo **Gravity_Core** para Magento 2 integra tu tienda con los servicios de Gravity, permitiendo:
 
-## Características
-
-- **Integración de Webhooks**: Envía automáticamente datos de productos y pedidos a los servicios de Gravity
-- **Método de Pago PGravity**: Método de pago en efectivo solo para uso API/admin
-- **Método de Envío LGravity**: Método de recogida en tienda solo para uso API/admin
-- **Estado de Pedido Automático**: Los pedidos que utilizan el método de pago PGravity se establecen automáticamente en estado "processing"
-- **Soporte Multi-tienda**: Configura diferentes ajustes para diferentes vistas de tienda
-
+- **Webhooks:** Notificaciones automáticas para eventos de productos y pedidos (creación, actualización, eliminación, actualización de stock).
+- **Método de Pago PGravity:** Método de pago en efectivo para integraciones API/admin.
+- **Método de Envío LGravity:** Método de envío (recogida en tienda) para integraciones API/admin.
+- **Actualización Automática de Estado:** Los pedidos que usan PGravity se establecen automáticamente en el estado "processing".
+- **Soporte Multi-tienda:** Configuración independiente para diferentes vistas de tienda.
 
 ## Requisitos
 
-- Magento 2.3.x o superior
-- PHP 7.4 o superior
+- **Magento:** 2.3.x o superior.
+- **PHP:** 7.4 o superior.
+- **Permisos:** Asegúrate de que los directorios críticos (var, pub/static, generated) tengan permisos de escritura.
+- **Entorno:** Adaptado para instalaciones Bitnami u otros entornos Linux.
 
-
-## Guía de Instalación Paso a Paso
+## Instalación
 
 ### Opción 1: Instalación Manual
 
-1. **Descargar el código**
+1. **Clonar el repositorio en el directorio adecuado**
 
-```shellscript
-git clone https://github.com/azweig/gravity-magento.git
-```
+   Navega al directorio `app/code` de tu instalación de Magento y clona el repositorio:
+   ```bash
+   cd /bitnami/magento/app/code
+   sudo git clone https://github.com/azweig/gravity-magento.git
+Crear la estructura de directorios
 
+Magento requiere que el módulo se ubique en app/code/Vendor/Module. Para este módulo, crea:
 
-2. **Crear la estructura de directorios en Magento**
+bash
+Copy
+sudo mkdir -p /bitnami/magento/app/code/Gravity/Core
+Copiar el contenido del módulo
 
-```shellscript
-mkdir -p app/code/Gravity
-```
+Copia todos los archivos del repositorio al directorio creado:
 
+bash
+Copy
+sudo cp -r /bitnami/magento/app/code/gravity-magento/* /bitnami/magento/app/code/Gravity/Core/
+Actualizar archivos de registro y configuración
 
-3. **Copiar los archivos del módulo**
+registration.php:
+Edita el archivo app/code/Gravity/Core/registration.php para registrar el módulo como Gravity_Core:
+php
+Copy
+<?php
+use Magento\Framework\Component\ComponentRegistrar;
+ComponentRegistrar::register(
+    ComponentRegistrar::MODULE,
+    'Gravity_Core',
+    __DIR__
+);
+module.xml:
+En app/code/Gravity/Core/etc/module.xml, confirma que el nombre del módulo sea Gravity_Core:
+xml
+Copy
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
+    <module name="Gravity_Core" setup_version="1.0.0"/>
+</config>
+Habilitar e instalar el módulo
 
-```shellscript
-# Navega a la carpeta donde clonaste el repositorio
-cd gravity-magento
+Desde la raíz de Magento (/bitnami/magento), ejecuta:
 
-# Copia solo la carpeta Gravity a la ubicación correcta de Magento
-cp -r Gravity/* /ruta/a/tu/magento/app/code/Gravity/
-```
+bash
+Copy
+sudo bin/magento module:enable Gravity_Core
+sudo bin/magento setup:upgrade
+sudo bin/magento setup:di:compile
+sudo bin/magento cache:clean
+sudo bin/magento cache:flush
+Desplegar contenido estático (si es necesario)
 
+Si observas errores relacionados con archivos estáticos, ejecuta:
 
-4. **Verificar la estructura de archivos**
+bash
+Copy
+sudo bin/magento setup:static-content:deploy -f
+Opción 2: Instalación vía Composer
+Agregar el repositorio a Composer
 
-Asegúrate de que la estructura de archivos sea la siguiente:
+En la raíz de Magento, añade el repositorio:
 
-```plaintext
-app/code/Gravity/
-├── Api/
-├── Helper/
-├── Logger/
-├── Model/
-├── Observer/
-├── Plugin/
-├── etc/
-├── composer.json
-├── registration.php
-└── README.md
-```
-
-
-5. **Habilitar el módulo**
-
-```shellscript
-bin/magento module:enable Gravity_Core
-bin/magento setup:upgrade
-```
-
-
-6. **Compilar el código**
-
-```shellscript
-bin/magento setup:di:compile
-```
-
-
-7. **Limpiar la caché**
-
-```shellscript
-bin/magento cache:clean
-bin/magento cache:flush
-```
-
-
-8. **Verificar la instalación**
-
-```shellscript
-bin/magento module:status Gravity_Core
-```
-
-Deberías ver "Gravity_Core" en la lista de módulos habilitados.
-
-
-
-
-### Opción 2: Instalación con Composer
-
-1. **Añadir el repositorio a tu `composer.json`**
-
-```shellscript
+bash
+Copy
 composer config repositories.gravity vcs https://github.com/azweig/gravity-magento.git
-```
+Instalar el módulo
 
-
-2. **Requerir el módulo**
-
-```shellscript
+bash
+Copy
 composer require gravity/module-core:dev-main
-```
+Habilitar e instalar el módulo
 
+Ejecuta desde la raíz de Magento:
 
-3. **Habilitar el módulo**
+bash
+Copy
+sudo bin/magento module:enable Gravity_Core
+sudo bin/magento setup:upgrade
+sudo bin/magento setup:di:compile
+sudo bin/magento cache:clean
+sudo bin/magento cache:flush
+Configuración
+Acceso al Panel de Administración
 
-```shellscript
-bin/magento module:enable Gravity_Core
-bin/magento setup:upgrade
-```
+Inicia sesión en el backend de Magento.
+Navega a Stores > Configuration > Gravity > Gravity Core.
+Configuración de Opciones
 
+General:
+Habilitar o deshabilitar el módulo.
+Configurar ID de Organización, ID de Cliente y Secreto de Cliente.
+Definir las URLs para los Webhooks de Productos y Pedidos.
+Métodos de Pago y Envío:
+Habilitar PGravity y LGravity (estos métodos se usan solo vía API/admin).
+Guardar la configuración y limpiar la caché
 
-4. **Compilar el código**
+Cada cambio en la configuración puede requerir limpiar la caché de Magento para aplicarse.
 
-```shellscript
-bin/magento setup:di:compile
-```
+Permisos y Entorno (Bitnami)
+En entornos Bitnami, es crucial ajustar los permisos para evitar errores de escritura en los directorios. Por ejemplo:
 
+bash
+Copy
+sudo chown -R bitnami:daemon /bitnami/magento/var /bitnami/magento/pub/static /bitnami/magento/generated
+sudo chmod -R 775 /bitnami/magento/var /bitnami/magento/pub/static /bitnami/magento/generated
+Estos comandos aseguran que Magento pueda escribir en los directorios necesarios (cache, logs, contenido estático, etc.).
 
-5. **Limpiar la caché**
+FAQ
+¿Por qué recibo "Unknown module(s): 'Gravity_Core'"?
+Verifica que el nombre del módulo en registration.php y module.xml sea Gravity_Core y que la estructura de directorios sea app/code/Gravity/Core.
 
-```shellscript
-bin/magento cache:clean
-bin/magento cache:flush
-```
+¿Cómo soluciono errores de permisos en var/cache?
+Ajusta la propiedad y permisos del directorio var (y otros críticos) con:
 
+bash
+Copy
+sudo chown -R bitnami:daemon /bitnami/magento/var
+sudo chmod -R 775 /bitnami/magento/var
+¿Qué hacer si aparecen errores de archivos estáticos (404, js-translation.json, etc.)?
+Despliega el contenido estático:
 
+bash
+Copy
+sudo bin/magento setup:static-content:deploy -f
+sudo bin/magento cache:flush
+¿Por qué los métodos de pago/envío no aparecen en el checkout?
+Estos métodos están diseñados para integraciones API/admin, por lo que no se muestran en el frontend.
 
+¿Cómo activar el modo developer para ver errores detallados?
+Cambia el modo de Magento a developer:
 
-## Configuración
+bash
+Copy
+sudo bin/magento deploy:mode:set developer
+O temporalmente activa la visualización de errores en pub/index.php.
 
-### Configuración General
+Troubleshooting
+Error de permisos:
+Si Magento no puede escribir en var/cache u otros directorios, ajusta los permisos y la propiedad con los comandos mencionados anteriormente.
 
-1. Inicia sesión en el panel de administración de Magento
-2. Ve a **Tiendas > Configuración > Gravity > Gravity Core**
-3. Configura los siguientes ajustes:
+Errores durante la compilación:
+Ejecuta sudo bin/magento setup:di:compile y revisa la salida para identificar y solucionar problemas de compilación.
 
-1. **Habilitar**: Activa o desactiva el módulo
-2. **ID de Organización**: Tu ID de Organización de Gravity
-3. **ID de Cliente**: Tu ID de Cliente de Gravity
-4. **Secreto de Cliente**: Tu Secreto de Cliente de Gravity
-5. **URL de WebHooks para Productos**: URL para webhooks de productos
-6. **URL de WebHooks para Pedidos**: URL para webhooks de pedidos
-7. **URL de Token**: URL para autenticación de token (opcional)
-8. **Modo de Depuración**: Activa o desactiva el registro
+Problemas con contenido estático:
+Si los archivos estáticos no se generan correctamente, usa el comando de despliegue de contenido estático y limpia la caché.
 
+Errores al habilitar el módulo:
+Verifica que la estructura de directorios y los nombres en registration.php y module.xml sean correctos.
 
+Soporte
+Para soporte adicional, por favor abre un issue en este repositorio o contacta al equipo de desarrollo.
 
+Licencia
+Este módulo se distribuye bajo licencia comercial. Consulta el archivo LICENSE para más detalles.
 
+Contribuciones
+¡Las contribuciones son bienvenidas! Si deseas contribuir, por favor abre un pull request o un issue en este repositorio.
 
-### Métodos de Pago y Envío
+nginx
+Copy
 
-1. Ve a **Tiendas > Configuración > Gravity > Gravity Core > Métodos de Pago y Envío**
-2. Configura los siguientes ajustes:
-
-1. **Habilitar Método de Pago PGravity**: Activa o desactiva el método de pago PGravity
-2. **Habilitar Método de Envío LGravity**: Activa o desactiva el método de envío LGravity
-
-
-
-
-
-## Uso en Integraciones
-
-### Creación de Pedidos con API
-
-Cuando crees pedidos a través de API o admin, puedes usar el método de pago PGravity y el método de envío LGravity:
-
-```php
-// Establecer método de pago
-$order->setPaymentMethod('pgravity');
-
-// Establecer método de envío
-$order->setShippingMethod('lgravity_lgravity');
-
-// El estado del pedido se establecerá automáticamente en "processing" al guardar
-$order->save();
-```
-
-### Ejemplo de API REST
-
-```plaintext
-POST /V1/orders
-{
-    "entity": {
-        "customer_email": "cliente@ejemplo.com",
-        "payment": {
-            "method": "pgravity"
-        },
-        "shipping_method": "lgravity_lgravity"
-    }
-}
-```
-
-## Funcionalidad de Webhooks
-
-El módulo envía automáticamente notificaciones webhook a los servicios de Gravity para los siguientes eventos:
-
-- Creación de nuevos productos
-- Actualizaciones de productos
-- Eliminaciones de productos
-- Actualizaciones de cantidad de stock
-- Creación de nuevos pedidos
-- Actualizaciones de pedidos
-
-
-### Formato de Datos de Webhook
-
-Los webhooks se envían en formato JSON con la siguiente estructura:
-
-```json
-{
-    "data": {
-        // Datos de la entidad (producto o pedido)
-    },
-    "eventType": "TipoDeEvento"
-}
-```
-
-Los tipos de eventos incluyen:
-
-- ProductCreated
-- ProductUpdated
-- ProductDeleted
-- ProductSkuStockUpdated
-- OrderCreated
-- OrderUpdated
-
-
-## Depuración
-
-Los logs se almacenan en `var/log/gravity.log` cuando el modo de depuración está habilitado.
-
-## Solución de Problemas Comunes
-
-### El módulo no aparece en la configuración
-
-- Verifica que el módulo esté habilitado: `bin/magento module:status Gravity_Core`
-- Limpia la caché: `bin/magento cache:clean`
-- Comprueba los logs en `var/log/exception.log` y `var/log/system.log`
-
-
-### Los webhooks no se envían
-
-- Verifica que el módulo esté habilitado en la configuración
-- Comprueba que las URLs de webhook estén correctamente configuradas
-- Activa el modo de depuración y revisa `var/log/gravity.log`
-- Verifica las credenciales de API (ID de Organización, ID de Cliente, Secreto de Cliente)
-
-
-### Los métodos de pago/envío no aparecen
-
-- Estos métodos están diseñados para ser utilizados solo a través de API/admin, no aparecerán en el checkout del frontend
-- Verifica que estén habilitados en la configuración del módulo
-
-
-## Soporte
-
-Para soporte, por favor contacta:
-
-- Email: [support@gravity.com](mailto:support@gravity.com)
-- Sitio web: [https://www.gravity.com](https://www.gravity.com)
-
-
-## Licencia
-
-Este módulo está licenciado bajo licencia propietaria. Consulta el archivo LICENSE para más detalles.
+Si tienes alguna duda o necesitas ajustar algún detalle, házmelo saber.
