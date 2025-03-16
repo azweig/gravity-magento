@@ -1,0 +1,39 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <gravity>
+            <general>
+                <active>0</active>
+                <debug>0</debug>
+            </general>
+        </gravity>
+        <payment>
+            <pgravity>
+                <active>1</active>
+                <model>Gravity\Model\Payment\PGravity</model>
+                <title>Gravity Payment</title>
+                <order_status>processing</order_status>
+                <payment_action>authorize_capture</payment_action>
+                <can_use_checkout>0</can_use_checkout>
+                <can_use_internal>1</can_use_internal>
+                <is_gateway>0</is_gateway>
+                <sort_order>100</sort_order>
+            </pgravity>
+        </payment>
+        <carriers>
+            <lgravity>
+                <active>1</active>
+                <sallowspecific>0</sallowspecific>
+                <model>Gravity\Model\Carrier\LGravity</model>
+                <name>Gravity Logistics</name>
+                <title>Gravity Shipping</title>
+                <specificerrmsg>This shipping method is not available. Please try another shipping method.</specificerrmsg>
+                <handling_type>F</handling_type>
+                <frontend>0</frontend>
+                <sort_order>100</sort_order>
+            </lgravity>
+        </carriers>
+    </default>
+</config>
+

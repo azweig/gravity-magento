@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <!-- Event: sales_order_save_before -->
+    <event name="sales_order_save_before">
+        <observer name="gravity_save_order_before" instance="Gravity\Observer\BeforeSave"/>
+        <observer name="gravity_save_order_before_custom" instance="Gravity\Observer\CustomBeforeSave"/>
+    </event>
+
+    <!-- Event: sales_order_save_after -->
+    <event name="sales_order_save_after">
+        <observer name="gravity_order" instance="Gravity\Observer\AfterOrder"/>
+    </event>
+
+    <!-- Event: catalog_product_save_before -->
+    <event name="catalog_product_save_before">
+        <observer name="gravity_product_save_before" instance="Gravity\Observer\BeforeSave"/>
+    </event>
+
+    <!-- Event: catalog_product_save_after -->
+    <event name="catalog_product_save_after">
+        <observer name="gravity_new_product" instance="Gravity\Observer\AfterProduct"/>
+    </event>
+
+    <!-- Event: catalog_product_delete_before -->
+    <event name="catalog_product_delete_before">
+        <observer name="gravity_delete_product" instance="Gravity\Observer\BeforeDeleteProduct"/>
+    </event>
+
+    <!-- Event: cataloginventory_stock_item_save_after -->
+    <event name="cataloginventory_stock_item_save_after">
+        <observer name="gravity_save_qty" instance="Gravity\Observer\AfterQty"/>
+    </event>
+
+    <!-- Event: catalog_product_import_bunch_save_after -->
+    <event name="catalog_product_import_bunch_save_after">
+        <observer name="gravity_import_products" instance="Gravity\Observer\AfterImportDataObserver"/>
+    </event>
+</config>
+
